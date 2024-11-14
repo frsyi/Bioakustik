@@ -136,7 +136,6 @@ const AudioCard = ({ recording }: AudioCardProps) => {
         </Button>
       </Flex>
       <Box position={"relative"} my={4} overflow="hidden">
-        {/* {audio?.audio.buffered.length} */}
         <Image
           src={
             recording?.Spectrogram?.imageUrl ?? "/img/default-spectrogram.png"
