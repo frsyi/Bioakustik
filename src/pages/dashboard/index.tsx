@@ -2,6 +2,7 @@ import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import AudioCard from "../../components/AudioCard"
+import Pagination from "../../components/Pagination"
 import useAudioList from "../../hooks/useAudioList"
 
 const DashboardPage = () => {
@@ -41,6 +42,13 @@ const DashboardPage = () => {
           <AudioCard recording={recording} key={index} />
         ))}
       </VStack>
+      <HStack justifyContent="flex-end">
+        <Pagination 
+          currentPage={recording?.currentPage}
+          maxPage={recording?.totalPage}
+          goPage={goPage}
+        />
+      </HStack>
     </Box>
   )
 }
