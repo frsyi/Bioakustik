@@ -28,6 +28,7 @@ import {
 import Fuse from "fuse.js"
 import Head from "next/head"
 import { useState } from "react"
+import { useConfirm } from "../../hooks/useConfirm"
 import useCreateUser from "../../hooks/useCreateUser"
 import useUser from "../../hooks/useUser"
 import useUserRole from "../../hooks/useUserRole"
@@ -43,6 +44,7 @@ const UserPage = () => {
 
     const [search, setSearch] = useState("")
     const users = search ? fuse.search(search).map((i) => i.item) : data
+    const { confirm } = useConfirm()
     const { changeRole, roles } = useUserRole()
 
     return (
@@ -126,12 +128,12 @@ const UserPage = () => {
                                     <Button
                                         colorScheme="red"
                                         onClick={() => {
-                                            // confirm(
-                                            //     `Are you sure want to delete "${user.name}"?`,
-                                            //     () => {
-                                            //     remove(user.id)
-                                            //     }
-                                            // )
+                                            confirm(
+                                                `Are you sure want to delete "${user.name}"?`,
+                                                () => {
+                                                remove(user.id)
+                                                }
+                                            )
                                         }}
                                     >
                                         Delete
