@@ -12,9 +12,9 @@ import { useRouter } from "next/router"
 import useAuth from "../hooks/useAuth"
 import useMe from "../hooks/useMe"
 import { IconHome } from "../icons/IconHome"
-import IconLock from "../icons/IconLock"
 import IconLogout from "../icons/IconLogout"
 import IconUser from "../icons/IconUser"
+import ConfirmationModal from "./Confirmation"
 
 const ButtonMenu = ({ path, ...props }: ButtonProps & { path?: string }) => {
   const router = useRouter()
@@ -67,15 +67,6 @@ const Sidebar = () => {
             >
               Tags
             </ButtonMenu>
-            <ButtonMenu
-              path="/token"
-              onClick={() => {
-                router.push("/token")
-              }}
-              leftIcon={<IconLock />}
-            >
-              API Keys
-            </ButtonMenu>
           </VStack>
         </Box>
         <Box>
@@ -110,6 +101,16 @@ const Sidebar = () => {
           </Box>
         </Flex>
       </Box>
+      <ConfirmationModal
+        isOpen={isOpen}
+        onClose={onClose}
+        onConfirm={() => {
+          logout()
+          router.push("/")
+        }}
+      >
+        You are going to sign out from this account
+      </ConfirmationModal>
     </Flex>
   )
 }
