@@ -1,9 +1,10 @@
-import { Box, Flex, HStack, Text, VStack } from "@chakra-ui/react"
+import { Box, Flex, HStack, Select, Text, VStack } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import AudioCard from "../../components/AudioCard"
 import Pagination from "../../components/Pagination"
 import useAudioList from "../../hooks/useAudioList"
+import useAudioTitle from "../../hooks/useAudioTitle"
 
 const DashboardPage = () => {
   const router = useRouter()
@@ -14,8 +15,11 @@ const DashboardPage = () => {
     })
   }
   
-  // Ambil data rekaman jika perlu
-  const { data: recording } = useAudioList(Number(router.query.page as string))
+  const { title, setTitle, titleList } = useAudioTitle()
+  const { data: recording } = useAudioList({
+    page: Number(router.query.page) || 1,
+    title: title ? title : undefined,
+  })
 
   // Jika tidak ada data dari server, gunakan file lokal
   const recordings = recording?.data ?? [
@@ -37,6 +41,30 @@ const DashboardPage = () => {
       <Text fontSize="xl" fontWeight="bold" mb={4}>
         List of Recording Data
       </Text>
+      <Flex justifyContent="space-between" align="center" gap={4}>
+        <Box borderRadius="xl">
+          <Select
+            value={title}
+            onChange={(e) => {
+              setTitle(e.currentTarget.value)
+            }}
+            variant={"solid"}
+            bgColor={"white"}
+          >
+            <option value="">All</option>
+            {titleList.map((title, index) => (
+              <option value={title} key={index}>
+                {title}
+              </option>
+            ))}
+          </Select>
+        </Box>
+        <Pagination
+          currentPage={recording?.currentPage}
+          maxPage={recording?.totalPage}
+          goPage={goPage}
+        />
+      </Flex>
       <VStack align="start" spacing={4} my={10}>
         {recordings.map((recording, index) => (
           <AudioCard recording={recording} key={index} />
