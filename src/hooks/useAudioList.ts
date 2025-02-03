@@ -28,10 +28,22 @@ export interface User {
   username: string
 }
 
-const useAudioList = (page: number = 1) => {
+const useAudioList = (query: {
+  page: number
+  take?: number
+  title?: string
+}) => {
   const { fetcher } = useAuth()
-  const url = `/audio?page=${page}&take=5`
-  return useSWR<Response>(
+
+  const urlQuery = new URLSearchParams({
+    ...(isFinite(query.page) &&
+      query.page > 0 && { page: query.page.toString() }),
+    ...(isFinite(query.take) ? { take: query.take.toString() } : { take: "5" }),
+    ...(query.title && { title: query.title }),
+  })
+
+  const url = `/audio?${urlQuery.toString()}`
+  const swr = useSWR<Response>(
     url,
     (url: string) =>
       fetcher()
@@ -39,6 +51,10 @@ const useAudioList = (page: number = 1) => {
         .then(({ data }) => data),
     { revalidateOnFocus: false }
   )
+
+  return {
+    ...swr,
+  }
 }
 
 export default useAudioList
