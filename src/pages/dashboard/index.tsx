@@ -5,6 +5,7 @@ import AudioCard from "../../components/AudioCard"
 import Pagination from "../../components/Pagination"
 import useAudioList from "../../hooks/useAudioList"
 import useAudioTitle from "../../hooks/useAudioTitle"
+import { AudioSegmentProvider } from "../../hooks/useAudioSegment"
 
 const DashboardPage = () => {
   const router = useRouter()
@@ -34,7 +35,7 @@ const DashboardPage = () => {
   ]
 
   return (
-    <Box>
+    <AudioSegmentProvider>
       <Head>
         <title>Bioakustik - Dashboard</title>
       </Head>
@@ -77,7 +78,7 @@ const DashboardPage = () => {
           goPage={goPage}
         />
       </HStack>
-    </Box>
+    </AudioSegmentProvider>
   )
 }
 
