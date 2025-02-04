@@ -16,10 +16,14 @@ import {
   SliderThumb,
   SliderTrack,
   Text,
+  Tooltip,
   useDisclosure,
+  useToast,
 } from "@chakra-ui/react"
 import { useEffect, useRef, useState } from "react"
 import { AudioItem } from "../hooks/useAudioList"
+import { useAudioSegment } from "../hooks/useAudioSegment"
+import useMe from "../hooks/useMe"
 import IconPause from "../icons/IconPause"
 import IconPlay from "../icons/IconPlay"
 import IconSeekLeft from "../icons/IconSeekLeft"
@@ -28,6 +32,7 @@ import IconSpeaker from "../icons/IconSpeaker"
 
 type AudioCardProps = {
   recording: AudioItem
+  onDelete?: (id: string) => Promise<void>
 }
 
 const formatTime = (duration: number) => {
@@ -48,8 +53,18 @@ const getPosition = (duration: number, currentTime: number) => {
   return (currentTime / duration) * (max - min) + min
 }
 
-const AudioCard = ({ recording }: AudioCardProps) => {
+const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
   const ref = useRef<HTMLAudioElement>(null)
+
+  const [isMouseSelecting, setIsMouseSelecting] = useState(false)
+
+  const [timeRange, setTimeRange] = useState<{
+    start: number
+    end: number
+  }>({
+    start: 0,
+    end: 0,
+  })
   const [audio, setAudio] = useState<{
     currentTime: number
     duration: number
@@ -68,14 +83,45 @@ const AudioCard = ({ recording }: AudioCardProps) => {
           volume: ref.current.volume,
           audio: ref.current,
         })
+
+        if (timeRange.end > 0 && ref.current.currentTime > timeRange.end) {
+          ref.current.pause()
+          ref.current.currentTime = timeRange.start
+        }
       }
     }, 10)
     return () => clearInterval(timer)
-  }, [ref.current])
+  }, [ref.current, timeRange.end])
+
+  useEffect(() => {
+    if (typeof ref.current?.currentTime === "number") {
+      ref.current.currentTime = timeRange.start || 0
+    }
+  }, [timeRange.start])
+
+  const me = useMe()
+
+  const calculate = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (ref.current == null) return
+    const rect = (e.target as HTMLDivElement).getBoundingClientRect()
+    const x = e.clientX - rect.left
+    const min = (7.02 * rect.width) / 100
+    const max = (99 * rect.width) / 100
+    const percent = ((x - min) / (max - min)) * 100
+    const time = (percent / 100) * ref.current.duration
+    return {
+      percent,
+      time,
+    }
+  }
 
   const { isOpen, onToggle } = useDisclosure({
     defaultIsOpen: false,
   })
+
+  const { createSegment, removeSegment, useSegment } = useAudioSegment()
+  const { data: segments } = useSegment(recording.id)
+  const toast = useToast()
 
   return (
     <Box
@@ -120,8 +166,9 @@ const AudioCard = ({ recording }: AudioCardProps) => {
           />
         </Box>
       </Flex>
-      <Flex justify={"flex-end"} mt={3}>
+      <Flex justify={"space-between"} mt={3} gap={2}>
         <Button
+          ml="auto"
           borderRadius="full"
           colorScheme={"purple"}
           onClick={onToggle}
@@ -137,6 +184,29 @@ const AudioCard = ({ recording }: AudioCardProps) => {
       </Flex>
       <Box position={"relative"} my={4} overflow="hidden">
         <Image
+          onMouseDown={(e) => {
+            e.preventDefault()
+            setIsMouseSelecting(true)
+            setTimeRange({
+              start: calculate(e).time,
+              end: 0,
+            })
+          }}
+          onMouseUp={(e) => {
+            e.preventDefault()
+            setIsMouseSelecting(false)
+            if (ref.current == null) return
+            const time = calculate(e).time
+            if (time === timeRange.start) {
+              setTimeRange({ start: timeRange.start, end: 0 })
+              return
+            }
+            if (time < timeRange.start) {
+              setTimeRange({ start: time, end: timeRange.start })
+              return
+            }
+            setTimeRange({ ...timeRange, end: time })
+          }}
           src={
             recording?.Spectrogram?.imageUrl ?? "/img/default-spectrogram.png"
           }
@@ -148,22 +218,86 @@ const AudioCard = ({ recording }: AudioCardProps) => {
           marginTop={
             !isOpen && recording?.Spectrogram?.imageUrl ? "-20.2%" : undefined
           }
-          onClick={(e) => {
-            // get click position
-            if (ref.current == null) return
-            const rect = (e.target as HTMLImageElement).getBoundingClientRect()
-            const x = e.clientX - rect.left
-
-            const min = (7.02 * rect.width) / 100
-            const max = (99 * rect.width) / 100
-            const percent = ((x - min) / (max - min)) * 100
-
-            const currentTime = (percent / 100) * ref.current.duration
-            if (isFinite(currentTime)) ref.current.currentTime = currentTime
-          }}
         />
         {isFinite(audio?.duration) && (
           <>
+            {segments?.map((segment, index) => (
+              <Tooltip
+                key={segment.id}
+                label={segment?.tag?.name}
+                placement="top"
+              >
+                <Box
+                  key={index}
+                  transition={"all 0.3s"}
+                  position={"absolute"}
+                  left={`${getPosition(audio?.duration, segment.startTime)}%`}
+                  width={`calc(${
+                    getPosition(audio?.duration, segment.endTime) -
+                    getPosition(audio?.duration, segment.startTime)
+                  }% + 1px)`}
+                  h={"10px"}
+                  bottom={
+                    recording?.Spectrogram?.imageUrl
+                      ? isOpen
+                        ? "28%"
+                        : "80%"
+                      : "70%"
+                  }
+                  bgColor={segment.tag?.color || "blue"}
+                  _hover={{
+                    cursor: "pointer",
+                  }}
+                  opacity={0.8}
+                  onClick={() => {
+                    setTimeRange({
+                      start: segment.startTime,
+                      end: segment.endTime,
+                    })
+
+                    setAudio({
+                      ...audio,
+                      currentTime: segment.startTime,
+                    })
+                  }}
+                  onContextMenu={(e) => {
+                    e.preventDefault()
+                    removeSegment(segment.id)
+                  }}
+                />
+              </Tooltip>
+            ))}
+            {timeRange.start > 0 && timeRange.end > 0 && (
+              <Box
+                transition={"all 0.3s"}
+                position={"absolute"}
+                left={`${getPosition(audio?.duration, timeRange.start)}%`}
+                width={`calc(${
+                  getPosition(audio?.duration, timeRange.end) -
+                  getPosition(audio?.duration, timeRange.start)
+                }% + 1px)`}
+                h={"10px"}
+                bottom={
+                  recording?.Spectrogram?.imageUrl
+                    ? isOpen
+                      ? "14.5%"
+                      : "41%"
+                    : "20%"
+                }
+                bgColor={"red"}
+                _hover={{
+                  cursor: "pointer",
+                }}
+                opacity={0.5}
+                onClick={() => {
+                  createSegment({
+                    audioId: recording.id,
+                    startTime: timeRange.start,
+                    endTime: timeRange.end,
+                  })
+                }}
+              />
+            )}
             <Box
               position={"absolute"}
               top={0}
