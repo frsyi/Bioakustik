@@ -3,14 +3,16 @@ import { Box, ChakraProvider, HStack } from "@chakra-ui/react"
 import { AppProps } from "next/app"
 import { useRouter } from "next/router"
 import LoginGuard from "../components/LoginGuard"
-import theme from "../theme"
 import Sidebar from "../components/Sidebar"
+import { ConfirmProvider } from "../hooks/useConfirm"
+import theme from "../theme"
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter()
   const isHome = router.pathname === "/"
   return (
     <ChakraProvider theme={theme}>
+      <ConfirmProvider>
         {isHome ? (
           <Component {...pageProps} />
         ) : (
@@ -23,6 +25,7 @@ function MyApp({ Component, pageProps }: AppProps) {
             </HStack>
           </LoginGuard>
         )}
+      </ConfirmProvider>
     </ChakraProvider>
   )
 }
