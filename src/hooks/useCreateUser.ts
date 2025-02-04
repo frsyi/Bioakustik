@@ -5,11 +5,11 @@ import useUser from "./useUser"
 
 const useCreateUser = () => {
     const { fetcher } = useAuth()
-    const [body, setBody] = useState({ 
-        name: "", 
-        username: "", 
-        password: "" })
-
+    const [body, setBody] = useState({
+        name: "",
+        username: "",
+        password: "",
+    })
 
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
@@ -19,17 +19,17 @@ const useCreateUser = () => {
         key: "username" | "password" | "name",
         value: string
     ) => {
-        setBody((prev) => ({ 
-            ...prev, 
+        setBody((prev) => ({
+            ...prev,
             [key]: value,
         }))
     }
-    
+
     const handleSubmit = async (onSuccess?: () => void) => {
         setLoading(true)
         setError("")
         try {
-            await fetcher().post("/users", body)
+            await fetcher().post("/user", body)
             mutate()
             setBody({
                 name: "",
@@ -50,7 +50,7 @@ const useCreateUser = () => {
             return false
         }
     }
-    
+
     const init = () => {
         setError("")
         setBody({
@@ -59,12 +59,12 @@ const useCreateUser = () => {
             password: "",
         })
     }
-    
+
     const remove = async (id: string) => {
         setLoading(true)
         setError("")
         try {
-            await fetcher().delete(`/users/${id}`)
+            await fetcher().delete(`/user/${id}`)
             mutate()
             return true
         } catch (error) {
@@ -78,7 +78,7 @@ const useCreateUser = () => {
             setLoading(false)
         }
     }
-    
+
     return {
         body,
         error,
@@ -86,7 +86,7 @@ const useCreateUser = () => {
         handleChange,
         handleSubmit,
         init,
-        remove
+        remove,
     }
 }
 

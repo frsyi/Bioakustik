@@ -21,7 +21,7 @@ const useUser = () => {
     )
     return {
         data: data || [],
-        ...swr
+        ...swr,
     }
 }
 

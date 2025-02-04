@@ -12,7 +12,7 @@ const DashboardPage = () => {
   const goPage = (page: number) => {
     router.push({
       pathname: "/dashboard",
-      query: { page },
+      query: { ...router.query, page },
     })
   }
   
@@ -72,7 +72,7 @@ const DashboardPage = () => {
         ))}
       </VStack>
       <HStack justifyContent="flex-end">
-        <Pagination 
+        <Pagination
           currentPage={recording?.currentPage}
           maxPage={recording?.totalPage}
           goPage={goPage}

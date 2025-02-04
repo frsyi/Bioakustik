@@ -12,7 +12,7 @@ const useAuth = () => {
 
     const setStore = (key: string, value: string) => {
         if (typeof window === "undefined") return null
-        return localStorage.setItem(key, value)
+        localStorage.setItem(key, value)
     }
 
     const [accessToken, setAccessToken] = useState<string | null>(
@@ -48,8 +48,8 @@ const useAuth = () => {
 
     const fetcher = () => {
         const instance = axios.create({
-          baseURL,
-          withCredentials: true,
+            baseURL,
+            withCredentials: true,
         })
         instance.defaults.headers.common["Authorization"] = `Bearer ${accessToken}`
         return instance
