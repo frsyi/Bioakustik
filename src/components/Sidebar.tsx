@@ -104,6 +104,8 @@ const Sidebar = () => {
       <ConfirmationModal
         isOpen={isOpen}
         onClose={onClose}
+        title="Do you want to log out?"
+        confirmLabel="Logout"
         onConfirm={() => {
           logout()
           router.push("/")
