@@ -32,6 +32,7 @@ import { useConfirm } from "../../hooks/useConfirm"
 import useCreateUser from "../../hooks/useCreateUser"
 import useUser from "../../hooks/useUser"
 import useUserRole from "../../hooks/useUserRole"
+import { useUserPassword } from "../../hooks/useUserPassword"
 
 const UserPage = () => {
   const { data } = useUser()
@@ -47,6 +48,8 @@ const UserPage = () => {
   const users = search ? fuse.search(search).map((i) => i.item) : data
   const { confirm } = useConfirm()
   const { changeRole, roles } = useUserRole()
+  const password = useUserPassword()
+
   return (
     <Box>
       <Head>
@@ -123,11 +126,15 @@ const UserPage = () => {
                 <Td textAlign={"center"}>{user._count.Audio}</Td>
                 <Td>
                   <ButtonGroup size="sm">
-                    <Tooltip label="Under construction" placement="left">
-                      <Button bgColor="purple" colorScheme="purple" disabled>
-                        Change Password
-                      </Button>
-                    </Tooltip>
+                    <Button 
+                      bgColor="purple" 
+                      colorScheme="purple"
+                      onClick={() => {
+                        password.handleOpen(user.id)
+                      }}
+                    >
+                      Change Password
+                    </Button>
                     {user._count.Audio === 0 && (
                       <Button
                         colorScheme="red"

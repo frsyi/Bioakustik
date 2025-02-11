@@ -53,7 +53,7 @@ const getPosition = (duration: number, currentTime: number) => {
   return (currentTime / duration) * (max - min) + min
 }
 
-const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
+const AudioCard = ({ recording }: AudioCardProps) => {
   const ref = useRef<HTMLAudioElement>(null)
 
   const [isMouseSelecting, setIsMouseSelecting] = useState(false)
@@ -121,7 +121,6 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
 
   const { createSegment, removeSegment, useSegment } = useAudioSegment()
   const { data: segments } = useSegment(recording.id)
-  const toast = useToast()
 
   return (
     <Box
@@ -243,7 +242,7 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
                         ? "28%"
                         : "80%"
                       : "70%"
-                  }
+                  }               
                   bgColor={segment.tag?.color || "blue"}
                   _hover={{
                     cursor: "pointer",

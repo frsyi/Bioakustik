@@ -5,6 +5,7 @@ import { useRouter } from "next/router"
 import LoginGuard from "../components/LoginGuard"
 import Sidebar from "../components/Sidebar"
 import { ConfirmProvider } from "../hooks/useConfirm"
+import { UserPasswordProvider } from "../hooks/useUserPassword"
 import theme from "../theme"
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -20,7 +21,9 @@ function MyApp({ Component, pageProps }: AppProps) {
             <HStack align="flex-start" spacing={4} h="100vh">
               <Sidebar />
               <Box flex={4} overflow="auto" p={10} bgColor="gray.100" h="full">
-                <Component {...pageProps} />
+                <UserPasswordProvider>
+                  <Component {...pageProps} />
+                </UserPasswordProvider>
               </Box>
             </HStack>
           </LoginGuard>

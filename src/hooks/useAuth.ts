@@ -25,14 +25,23 @@ const useAuth = () => {
                 "/auth/login",
                 { username, password },
                 { baseURL }
-            )
-            const token = response.data.access_token
+            );
+            const token = response.data.access_token;
             setAccessToken(token)
             setStore(tokenKey, token)
-        } catch (error) {
-            console.error("Login failed:", error)
-            logout()
-            throw new Error("Invalid Username or Password.")
+        } catch (error: any) {
+            if (axios.isAxiosError(error)) {
+                if (error.response?.status === 401) {
+                    console.error("Unauthorized:", error.response.data)
+                    throw new Error("Invalid Username or Password.")
+                } else {
+                    console.error("Login failed:", error.response?.data);
+                    throw new Error(error.response?.data?.message || "Login failed.")
+                }
+            } else {
+                console.error("Unexpected error:", error)
+                throw new Error("Unexpected error occurred.")
+            }
         }
     }
 
