@@ -89,13 +89,9 @@ const UserPage = () => {
             Add New User
           </Button>
         </Flex>
-        {/* Table */}
         <Table size="sm" my={10}>
           <Thead>
             <Tr>
-              {/* <Th>
-                <Checkbox />
-              </Th> */}
               <Th>Name</Th>
               <Th>Username</Th>
               <Th>Role</Th>

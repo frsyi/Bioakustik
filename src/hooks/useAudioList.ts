@@ -32,6 +32,7 @@ const useAudioList = (query: {
   page: number
   take?: number
   title?: string
+  date?: string
 }) => {
   const { fetcher } = useAuth()
 
@@ -40,6 +41,7 @@ const useAudioList = (query: {
       query.page > 0 && { page: query.page.toString() }),
     ...(isFinite(query.take) ? { take: query.take.toString() } : { take: "5" }),
     ...(query.title && { title: query.title }),
+    ...(query.date && { date: query.date }),
   })
 
   const url = `/audio?${urlQuery.toString()}`
