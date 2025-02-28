@@ -29,6 +29,7 @@ import IconPlay from "../icons/IconPlay"
 import IconSeekLeft from "../icons/IconSeekLeft"
 import IconSeekRight from "../icons/IconSeekRight"
 import IconSpeaker from "../icons/IconSpeaker"
+import WaveformChart from './audio'
 
 type AudioCardProps = {
   recording: AudioItem
@@ -182,7 +183,10 @@ const AudioCard = ({ recording }: AudioCardProps) => {
         </Button>
       </Flex>
       <Box position={"relative"} my={4} overflow="hidden">
-        <Image
+        <WaveformChart
+          mp3File={recording.url}
+          audioRef={ref}
+          showSpectrogram={isOpen}
           onMouseDown={(e) => {
             e.preventDefault()
             setIsMouseSelecting(true)
@@ -206,17 +210,6 @@ const AudioCard = ({ recording }: AudioCardProps) => {
             }
             setTimeRange({ ...timeRange, end: time })
           }}
-          src={
-            recording?.Spectrogram?.imageUrl ?? "/img/default-spectrogram.png"
-          }
-          alt="Spectrogram"
-          loading="lazy"
-          w="100%"
-          draggable={false}
-          transition={"all 0.8s"}
-          marginTop={
-            !isOpen && recording?.Spectrogram?.imageUrl ? "-20.2%" : undefined
-          }
         />
         {isFinite(audio?.duration) && (
           <>
@@ -236,18 +229,13 @@ const AudioCard = ({ recording }: AudioCardProps) => {
                     getPosition(audio?.duration, segment.startTime)
                   }% + 1px)`}
                   h={"10px"}
-                  bottom={
-                    recording?.Spectrogram?.imageUrl
-                      ? isOpen
-                        ? "28%"
-                        : "80%"
-                      : "70%"
-                  }               
+                  bottom="80px"
                   bgColor={segment.tag?.color || "blue"}
                   _hover={{
                     cursor: "pointer",
                   }}
                   opacity={0.8}
+                  zIndex="overlay"
                   onClick={() => {
                     setTimeRange({
                       start: segment.startTime,
