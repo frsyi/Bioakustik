@@ -1,6 +1,7 @@
-import { Box, Flex, HStack, Select, Text, VStack } from "@chakra-ui/react"
+import { Box, Flex, HStack, Select, Text, VStack, Input } from "@chakra-ui/react"
 import Head from "next/head"
 import { useRouter } from "next/router"
+import { useState } from "react"
 import AudioCard from "../../components/AudioCard"
 import Pagination from "../../components/Pagination"
 import useAudioList from "../../hooks/useAudioList"
@@ -15,10 +16,14 @@ const DashboardPage = () => {
       query: { ...router.query, page },
     })
   }
+  const [selectedDate, setSelectedDate] = useState<string | undefined>(
+    router.query.date as string
+  )
   const { title, setTitle, titleList } = useAudioTitle()
   const { data: recording } = useAudioList({
     page: Number(router.query.page) || 1,
     title: title ? title : undefined,
+    date: selectedDate,
   })
 
   if (!recording) return null
@@ -30,7 +35,7 @@ const DashboardPage = () => {
       <Text fontSize="xl" fontWeight="bold" mb={4}>
         List of Recoding Data
       </Text>
-      <Flex justifyContent="space-between" align="center" gap={4}>
+      <Flex align="center" gap={4}>
         <Box borderRadius="xl">
           <Select
             value={title}
@@ -48,11 +53,23 @@ const DashboardPage = () => {
             ))}
           </Select>
         </Box>
-        <Pagination
-          currentPage={recording.currentPage}
-          maxPage={recording.totalPage}
-          goPage={goPage}
+        <Input
+          type="date"
+          value={selectedDate || ""}
+          onChange={(e) => {
+            setSelectedDate(e.target.value);
+          }}
+          bgColor="white"
+          w="200px"
         />
+
+        <Box ml="auto">
+          <Pagination
+            currentPage={recording?.currentPage}
+            maxPage={recording?.totalPage}
+            goPage={goPage}
+          />
+        </Box>
       </Flex>
       <VStack align="start" spacing={4} my={10}>
         {recording?.data?.map((recording, index) => (

@@ -95,7 +95,6 @@ const UserPage = () => {
               <Th>Name</Th>
               <Th>Username</Th>
               <Th>Role</Th>
-              <Th textAlign="center">Upload Count</Th>
               <Th>Actions</Th>
             </Tr>
           </Thead>
@@ -119,7 +118,6 @@ const UserPage = () => {
                       ))}
                   </Select>
                 </Td>
-                <Td textAlign={"center"}>{user._count.Audio}</Td>
                 <Td>
                   <ButtonGroup size="sm">
                     <Button 
