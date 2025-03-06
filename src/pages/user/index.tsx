@@ -89,67 +89,69 @@ const UserPage = () => {
             Add New User
           </Button>
         </Flex>
-        <Table size="sm" my={10}>
-          <Thead>
-            <Tr>
-              <Th>Name</Th>
-              <Th>Username</Th>
-              <Th>Role</Th>
-              <Th>Actions</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {users?.map((user) => (
-              <Tr key={user.id}>
-                <Td>{user.name}</Td>
-                <Td>{user.username}</Td>
-                <Td>
-                  <Select
-                    value={user.role}
-                    onChange={(e) => {
-                      changeRole(user.id, e.currentTarget.value)
-                    }}
-                  >
-                    {roles &&
-                      Object.entries(roles).map(([key, value]) => (
-                        <option key={key} value={key}>
-                          {value}
-                        </option>
-                      ))}
-                  </Select>
-                </Td>
-                <Td>
-                  <ButtonGroup size="sm">
-                    <Button 
-                      bgColor="purple" 
-                      colorScheme="purple"
-                      onClick={() => {
-                        password.handleOpen(user.id)
+        <Box overflow="auto">
+          <Table size="sm" my={10}>
+            <Thead>
+              <Tr>
+                <Th>Name</Th>
+                <Th>Username</Th>
+                <Th>Role</Th>
+                <Th>Actions</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              {users?.map((user) => (
+                <Tr key={user.id}>
+                  <Td>{user.name}</Td>
+                  <Td>{user.username}</Td>
+                  <Td>
+                    <Select
+                      value={user.role}
+                      onChange={(e) => {
+                        changeRole(user.id, e.currentTarget.value)
                       }}
                     >
-                      Change Password
-                    </Button>
-                    {user._count.Audio === 0 && (
-                      <Button
-                        colorScheme="red"
+                      {roles &&
+                        Object.entries(roles).map(([key, value]) => (
+                          <option key={key} value={key}>
+                            {value}
+                          </option>
+                        ))}
+                    </Select>
+                  </Td>
+                  <Td>
+                    <ButtonGroup size="sm">
+                      <Button 
+                        bgColor="purple" 
+                        colorScheme="purple"
                         onClick={() => {
-                          confirm(
-                            `Are you sure want to delete "${user.name}"?`,
-                            () => {
-                              remove(user.id)
-                            }
-                          )
+                          password.handleOpen(user.id)
                         }}
                       >
-                        Delete
+                        Change Password
                       </Button>
-                    )}
-                  </ButtonGroup>
-                </Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
+                      {user._count.Audio === 0 && (
+                        <Button
+                          colorScheme="red"
+                          onClick={() => {
+                            confirm(
+                              `Are you sure want to delete "${user.name}"?`,
+                              () => {
+                                remove(user.id)
+                              }
+                            )
+                          }}
+                        >
+                          Delete
+                        </Button>
+                      )}
+                    </ButtonGroup>
+                  </Td>
+                </Tr>
+              ))}
+            </Tbody>
+          </Table>
+        </Box>
       </Box>
 
       <Modal isOpen={isOpen} onClose={onClose}>

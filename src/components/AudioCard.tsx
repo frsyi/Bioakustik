@@ -311,7 +311,7 @@ const AudioCard = ({ recording }: AudioCardProps) => {
         )}
       </Box>
       <audio ref={ref} controls={false} src={recording.url} />
-      <Flex justify="space-between" align="center" mt={4}>
+      <Flex justify="space-between" align="center" mt={4} overflow="auto">
         <Flex flex={1}>
           <Flex
             fontSize="small"
