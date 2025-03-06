@@ -41,6 +41,7 @@ const WaveformChart = ({
         SpectrogramPlugin.create({
           container: spectrogramRef.current,
           labels: true,
+          height: 200,
         })
       )
     }
@@ -76,13 +77,14 @@ const WaveformChart = ({
       {showSpectrogram && (
         <Box 
           ref={spectrogramRef} 
-          h="200px" 
-          w="100%" 
+          h="100%" 
+          w="100%"
           border="2px solid #ccc" 
           borderRadius="5px"
           mb={2}
-          overflow="hidden"
           position="relative"
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
         />
       )}
 
@@ -90,7 +92,6 @@ const WaveformChart = ({
         ref={waveformRef} 
         h="50px" 
         w="100%"
-        left={10}
         border="2px solid #ccc" 
         borderRadius="5px" 
         onMouseDown={onMouseDown}

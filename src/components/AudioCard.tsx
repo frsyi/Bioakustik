@@ -1,3 +1,4 @@
+
 import {
   ChevronDownIcon,
   ChevronUpIcon,
@@ -48,8 +49,12 @@ const formatTime = (duration: number) => {
   }`
 }
 
+// const getPosition = (duration: number, currentTime: number) => {
+//   if (!duration) return 0
+//   return (currentTime / duration) * 100
+// }
 const getPosition = (duration: number, currentTime: number) => {
-  const min = 7.02
+  const min = 0.5
   const max = 99
   return (currentTime / duration) * (max - min) + min
 }
@@ -103,17 +108,16 @@ const AudioCard = ({ recording }: AudioCardProps) => {
   const me = useMe()
 
   const calculate = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (ref.current == null) return
+    if (ref.current == null) return null
+    
     const rect = (e.target as HTMLDivElement).getBoundingClientRect()
     const x = e.clientX - rect.left
-    const min = (7.02 * rect.width) / 100
-    const max = (99 * rect.width) / 100
-    const percent = ((x - min) / (max - min)) * 100
-    const time = (percent / 100) * ref.current.duration
-    return {
-      percent,
-      time,
-    }
+    const width = rect.width
+    
+    const percent = x / width
+    const time = percent * ref.current.duration
+    
+    return { percent, time }
   }
 
   const { isOpen, onToggle } = useDisclosure({
@@ -190,10 +194,11 @@ const AudioCard = ({ recording }: AudioCardProps) => {
           onMouseDown={(e) => {
             e.preventDefault()
             setIsMouseSelecting(true)
-            setTimeRange({
-              start: calculate(e).time,
-              end: 0,
-            })
+            const result = calculate(e)
+            if (result) {
+              setTimeRange({ start: result.time, end: 0 })
+              if (ref.current) ref.current.currentTime = result.time
+            }
           }}
           onMouseUp={(e) => {
             e.preventDefault()
