@@ -60,7 +60,7 @@ const UserPage = () => {
       </Heading>
 
       <Box bgColor="white" borderRadius="lg" p={6}>
-        <Box fontWeight="semibold">Admin List</Box>
+        <Box fontWeight="semibold">User List</Box>
         <Flex gap={2} justify="space-between" my={4}>
           <Box>
             <InputGroup>
@@ -175,9 +175,19 @@ const UserPage = () => {
               my={2}
             />
             <Input
+              type="password"
               value={body.password}
               onChange={(e) => handleChange("password", e.currentTarget.value)}
               placeholder="Password"
+              my={2}
+            />
+            <Input
+              type="password"
+              value={body.confirmPassword}
+              onChange={(e) =>
+                handleChange("confirmPassword", e.currentTarget.value)
+              }
+              placeholder="Confirm Password"
               my={2}
             />
             <Button
@@ -191,7 +201,12 @@ const UserPage = () => {
             </Button>
           </ModalBody>
           <ModalFooter>
-            <Button onClick={onClose}>Cancel</Button>
+            <Button 
+              w="full"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
           </ModalFooter>
         </ModalContent>
       </Modal>

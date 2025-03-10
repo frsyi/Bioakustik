@@ -9,6 +9,7 @@ const useCreateUser = () => {
         name: "",
         username: "",
         password: "",
+        confirmPassword: "",
     })
 
     const [error, setError] = useState("")
@@ -16,7 +17,7 @@ const useCreateUser = () => {
     const { mutate } = useUser()
 
     const handleChange = (
-        key: "username" | "password" | "name",
+        key: "username" | "password" | "name" | "confirmPassword",
         value: string
     ) => {
         setBody((prev) => ({
@@ -28,13 +29,26 @@ const useCreateUser = () => {
     const handleSubmit = async (onSuccess?: () => void) => {
         setLoading(true)
         setError("")
+
+        if (body.password !== body.confirmPassword) {
+            setError("Password and Confirm Password do not match.")
+            setLoading(false)
+            return false
+        }
+
         try {
-            await fetcher().post("/user", body)
-            mutate()
+            const payload = {
+                name: body.name,
+                username: body.username,
+                password: body.password,
+            }
+            await fetcher().post("/user", payload)
+            mutate();
             setBody({
                 name: "",
                 username: "",
                 password: "",
+                confirmPassword: "",
             })
             if (onSuccess) onSuccess()
             return true
@@ -57,6 +71,7 @@ const useCreateUser = () => {
             name: "",
             username: "",
             password: "",
+            confirmPassword: "",
         })
     }
 
