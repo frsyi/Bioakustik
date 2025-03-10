@@ -33,7 +33,7 @@ const TagByTime = () => {
 
   if (isLoading) return <Spinner />
   if (error) return <Box color="red.500">Error loading data</Box>
-  if (!data || Object.keys(data).length === 0) return <Box>No data available</Box>
+  if (!data || Object.keys(data).length === 0) return <Box textAlign="center">No data available</Box>
 
   const groupedData = data as GroupedSegment[]
 

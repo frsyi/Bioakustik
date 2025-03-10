@@ -2,6 +2,7 @@ import { AxiosError } from "axios"
 import { useState } from "react"
 import useAuth from "./useAuth"
 import useUser from "./useUser"
+import useCustomToast from "./useCustomToast"
 
 const useCreateUser = () => {
     const { fetcher } = useAuth()
@@ -15,6 +16,7 @@ const useCreateUser = () => {
     const [error, setError] = useState("")
     const [loading, setLoading] = useState(false)
     const { mutate } = useUser()
+    const toast = useCustomToast()
 
     const handleChange = (
         key: "username" | "password" | "name" | "confirmPassword",
@@ -50,6 +52,11 @@ const useCreateUser = () => {
                 password: "",
                 confirmPassword: "",
             })
+            toast({
+                title: "User created",
+                description: `User has been created successfully`,
+                status: "success",
+            })
             if (onSuccess) onSuccess()
             return true
         } catch (error) {
@@ -81,6 +88,11 @@ const useCreateUser = () => {
         try {
             await fetcher().delete(`/user/${id}`)
             mutate()
+            toast({
+                title: "User deleted",
+                description: `User has been deleted successfully`,
+                status: "success",
+            })
             return true
         } catch (error) {
             if (error instanceof AxiosError) {
