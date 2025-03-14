@@ -56,7 +56,7 @@ const DateTimeFilter = ({
           <Button bgColor="white" fontWeight="normal">
             {isTimeApplied
               ? `Time: ${startHour} ${startPeriod} - ${endHour} ${endPeriod}`
-              : "Filter by Time"}
+              : "Select Range Time"}
           </Button>
         </PopoverTrigger>
         <PopoverContent>

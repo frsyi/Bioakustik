@@ -2,6 +2,7 @@
 import {
   ChevronDownIcon,
   ChevronUpIcon,
+  DeleteIcon,
   DownloadIcon,
   TriangleUpIcon,
 } from "@chakra-ui/icons"
@@ -59,7 +60,7 @@ const getPosition = (duration: number, currentTime: number) => {
   return (currentTime / duration) * (max - min) + min
 }
 
-const AudioCard = ({ recording }: AudioCardProps) => {
+const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
   const ref = useRef<HTMLAudioElement>(null)
 
   const [isMouseSelecting, setIsMouseSelecting] = useState(false)
@@ -105,7 +106,7 @@ const AudioCard = ({ recording }: AudioCardProps) => {
     }
   }, [timeRange.start])
 
-  const me = useMe()
+  const { data: me } = useMe()
 
   const calculate = (e: React.MouseEvent<HTMLDivElement>) => {
     if (ref.current == null) return null
@@ -126,6 +127,21 @@ const AudioCard = ({ recording }: AudioCardProps) => {
 
   const { createSegment, removeSegment, useSegment } = useAudioSegment()
   const { data: segments } = useSegment(recording.id)
+  const toast = useToast()
+
+  const handleDelete = (e) => {
+    e.preventDefault()
+    if (confirm("Hapus audio? Tindaakan ini tidak dapat dikembalikan")) {
+      if (onDelete) {
+        onDelete(recording.id).then(() => {
+          toast({
+            title: "Audio deleted",
+            status: "success",
+          })
+        })
+      }
+    }
+  }
 
   return (
     <Box
@@ -160,6 +176,7 @@ const AudioCard = ({ recording }: AudioCardProps) => {
               {recording.user?.name}
             </Box>
           </Flex>
+          
         </Flex>
         <Box>
           <IconButton
@@ -185,6 +202,16 @@ const AudioCard = ({ recording }: AudioCardProps) => {
         >
           Download
         </Button>
+        {me?.role ==="ADMIN" && (
+          <IconButton
+            aria-label="delete"
+            borderRadius="full"
+            colorScheme={"red"}
+            size="sm"
+            onClick={handleDelete}
+            icon={<DeleteIcon />}
+          />
+        )}
       </Flex>
       <Box position={"relative"} my={4} overflow="hidden">
         <WaveformChart

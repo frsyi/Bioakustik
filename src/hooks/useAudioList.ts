@@ -58,8 +58,14 @@ const useAudioList = (query: {
     { revalidateOnFocus: false }
   )
 
+  const remove = async (id: string) => {
+    await fetcher().delete(`/audio/${id}`)
+    swr.mutate()
+  }
+
   return {
     ...swr,
+    remove,
   }
 }
 
