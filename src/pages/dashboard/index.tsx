@@ -4,6 +4,7 @@ import { useRouter } from "next/router"
 import { useState } from "react"
 import AudioCard from "../../components/AudioCard"
 import Pagination from "../../components/Pagination"
+import DateTimeFilter from "../../components/DateTimeFilter"
 import useAudioList from "../../hooks/useAudioList"
 import { AudioSegmentProvider } from "../../hooks/useAudioSegment"
 import useAudioTitle from "../../hooks/useAudioTitle"
@@ -19,19 +20,19 @@ const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState<string | undefined>(
     router.query.date as string
   )
-  const [startHour, setStartHour] = useState<string | undefined>(
-    router.query.startHour as string
-  )
-  const [endHour, setEndHour] = useState<string | undefined>(
-    router.query.endHour as string
-  )
+  const [startHour, setStartHour] = useState<string | undefined>()
+  const [startPeriod, setStartPeriod] = useState<string | undefined>("AM")
+  const [endHour, setEndHour] = useState<string | undefined>()
+  const [endPeriod, setEndPeriod] = useState<string | undefined>("AM")
+  const [isTimeApplied, setIsTimeApplied] = useState(false)
+
   const { title, setTitle, titleList } = useAudioTitle()
   const { data: recording } = useAudioList({
     page: Number(router.query.page) || 1,
     title: title ? title : undefined,
     date: selectedDate,
-    startHour: startHour ? Number(startHour.split(":")[0]) : undefined,
-    endHour: endHour ? Number(endHour.split(":")[0]) : undefined,
+    startHour: startHour ? (startPeriod === "PM" ? Number(startHour) + 12 : Number(startHour)) : undefined,
+    endHour: endHour ? (endPeriod === "PM" ? Number(endHour) + 12 : Number(endHour)) : undefined,
   })
 
   if (!recording) return null
@@ -61,30 +62,20 @@ const DashboardPage = () => {
             ))}
           </Select>
         </Box>
-        <Input
-          type="date"
-          value={selectedDate || ""}
-          onChange={(e) => {
-            setSelectedDate(e.target.value);
-          }}
-          bgColor="white"
-          w="200px"
-        />
 
-        <Input
-          type="time"
-          value={startHour || ""}
-          onChange={(e) => setStartHour(e.target.value)}
-          bgColor="white"
-          w="150px"
-        />
-
-        <Input
-          type="time"
-          value={endHour || ""}
-          onChange={(e) => setEndHour(e.target.value)}
-          bgColor="white"
-          w="150px"
+        <DateTimeFilter
+          selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          startHour={startHour}
+          setStartHour={setStartHour}
+          startPeriod={startPeriod}
+          setStartPeriod={setStartPeriod}
+          endHour={endHour}
+          setEndHour={setEndHour}
+          endPeriod={endPeriod}
+          setEndPeriod={setEndPeriod}
+          isTimeApplied={isTimeApplied}
+          setIsTimeApplied={setIsTimeApplied}
         />
 
         <Box ml="auto">

@@ -40,9 +40,9 @@ const Sidebar = () => {
   return (
     <Flex flexDir="column" h="100%" flex={1} p={10} px={8}>
       <Box fontSize="xl" fontWeight="bold" mb={4}>
-        Bioakustik Database
+        Biokustik Database
       </Box>
-      <Box>Simple database for bioakustik recordings</Box>
+      <Box>Simple database for biokustik recordings</Box>
       <Flex flexDir="column" my={10} gap={10}>
         <Box>
           <Box color="gray" fontSize="sm" textTransform="uppercase">
