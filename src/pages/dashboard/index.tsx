@@ -19,11 +19,19 @@ const DashboardPage = () => {
   const [selectedDate, setSelectedDate] = useState<string | undefined>(
     router.query.date as string
   )
+  const [startHour, setStartHour] = useState<string | undefined>(
+    router.query.startHour as string
+  )
+  const [endHour, setEndHour] = useState<string | undefined>(
+    router.query.endHour as string
+  )
   const { title, setTitle, titleList } = useAudioTitle()
   const { data: recording } = useAudioList({
     page: Number(router.query.page) || 1,
     title: title ? title : undefined,
     date: selectedDate,
+    startHour: startHour ? Number(startHour.split(":")[0]) : undefined,
+    endHour: endHour ? Number(endHour.split(":")[0]) : undefined,
   })
 
   if (!recording) return null
@@ -63,6 +71,22 @@ const DashboardPage = () => {
           w="200px"
         />
 
+        <Input
+          type="time"
+          value={startHour || ""}
+          onChange={(e) => setStartHour(e.target.value)}
+          bgColor="white"
+          w="150px"
+        />
+
+        <Input
+          type="time"
+          value={endHour || ""}
+          onChange={(e) => setEndHour(e.target.value)}
+          bgColor="white"
+          w="150px"
+        />
+
         <Box ml="auto">
           <Pagination
             currentPage={recording?.currentPage}
@@ -71,10 +95,24 @@ const DashboardPage = () => {
           />
         </Box>
       </Flex>
-      <VStack align="start" spacing={4} my={10}>
-        {recording?.data?.map((recording, index) => (
-          <AudioCard recording={recording} key={index} />
-        ))}
+      <VStack align="center" spacing={4} my={10}>
+        {recording?.data?.length > 0 ? (
+          recording.data.map((recording, index) => (
+            <AudioCard recording={recording} key={index} />
+          ))
+        ) : (
+          <Box 
+            p={3}
+            borderRadius="lg"
+            bg="gray.50"
+            w="full"
+            textAlign="center"
+          >
+            <Text fontSize="md">
+              No audio recording available.
+            </Text>
+          </ Box>
+        )}
       </VStack>
       <HStack justifyContent="flex-end">
         <Pagination

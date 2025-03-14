@@ -33,15 +33,19 @@ const useAudioList = (query: {
   take?: number
   title?: string
   date?: string
+  startHour?: number
+  endHour?: number
 }) => {
   const { fetcher } = useAuth()
 
   const urlQuery = new URLSearchParams({
     ...(isFinite(query.page) &&
       query.page > 0 && { page: query.page.toString() }),
-    ...(isFinite(query.take) ? { take: query.take.toString() } : { take: "5" }),
+    ...(isFinite(query.take) ? { take: query.take.toString() } : { take: "6" }),
     ...(query.title && { title: query.title }),
     ...(query.date && { date: query.date }),
+    ...(isFinite(query.startHour) && { startHour: query.startHour?.toString() }),
+    ...(isFinite(query.endHour) && { endHour: query.endHour?.toString() }),
   })
 
   const url = `/audio?${urlQuery.toString()}`
