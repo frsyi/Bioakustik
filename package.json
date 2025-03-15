@@ -19,6 +19,7 @@
     "next": "latest",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "recharts": "^2.15.1",
     "swr": "^2.2.4",
     "wavesurfer.js": "^7.7.1"
   },

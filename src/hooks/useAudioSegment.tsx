@@ -11,7 +11,7 @@ import {
   useDisclosure,
 } from "@chakra-ui/react"
 import { createContext, useContext, useState } from "react"
-import useSWR, { SWRResponse } from "swr"
+import useSWR, { SWRResponse, mutate } from "swr"
 import useAuth from "./useAuth"
 import { useConfirm } from "./useConfirm"
 import useCustomToast from "./useCustomToast"
@@ -78,6 +78,7 @@ export const AudioSegmentProvider = ({ children }) => {
         description: "Segment has been created",
         status: "success",
       })
+      mutate(`/segment/count-by-audio/${body.audioId}`)
       setLastUpdate(Date.now())
       onClose()
     } catch (error) {
@@ -90,6 +91,7 @@ export const AudioSegmentProvider = ({ children }) => {
       fetcher()
         .delete(`/segment/${id}`)
         .then(() => {
+          mutate(`/segment/count-by-audio/${body.audioId}`)
           setLastUpdate(Date.now())
           toast({
             title: "Segment deleted",

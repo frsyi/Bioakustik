@@ -32,6 +32,7 @@ import IconSeekLeft from "../icons/IconSeekLeft"
 import IconSeekRight from "../icons/IconSeekRight"
 import IconSpeaker from "../icons/IconSpeaker"
 import WaveformChart from './audio'
+import SegmentPieChart from "./PieChart"
 
 type AudioCardProps = {
   recording: AudioItem
@@ -127,6 +128,7 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
 
   const { createSegment, removeSegment, useSegment } = useAudioSegment()
   const { data: segments } = useSegment(recording.id)
+  const [isPieChartOpen, setIsPieChartOpen] = useState(false)
   const toast = useToast()
 
   const handleDelete = (e) => {
@@ -176,7 +178,6 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
               {recording.user?.name}
             </Box>
           </Flex>
-          
         </Flex>
         <Box>
           <IconButton
@@ -202,17 +203,21 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
         >
           Download
         </Button>
+        <SegmentPieChart audioId={recording.id} />
         {me?.role ==="ADMIN" && (
-          <IconButton
-            aria-label="delete"
-            borderRadius="full"
-            colorScheme={"red"}
-            size="sm"
-            onClick={handleDelete}
-            icon={<DeleteIcon />}
-          />
+          <Tooltip label="Delete Audio" hasArrow>
+            <IconButton
+              aria-label="delete"
+              borderRadius="full"
+              colorScheme={"red"}
+              size="sm"
+              onClick={handleDelete}
+              icon={<DeleteIcon />}
+            />
+          </Tooltip>
         )}
       </Flex>
+      
       <Box position={"relative"} my={4} overflow="hidden">
         <WaveformChart
           mp3File={recording.url}
