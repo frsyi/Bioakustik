@@ -1,7 +1,7 @@
-import { Box, Text, Flex } from "@chakra-ui/react"; 
-import { useEffect, useRef, useState } from "react";
-import WaveSurfer from "wavesurfer.js";
-import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram";
+import { Box, Text, Flex } from "@chakra-ui/react" 
+import { useEffect, useRef, useState } from "react"
+import WaveSurfer from "wavesurfer.js"
+import SpectrogramPlugin from "wavesurfer.js/dist/plugins/spectrogram"
 
 const WaveformChart = ({
   mp3File,
@@ -32,6 +32,7 @@ const WaveformChart = ({
       barWidth: 3,
       barGap: 1,
       height: 50,
+      autoplay: false,
       backend: "MediaElement",
       media: audioRef.current,
     })
@@ -93,7 +94,8 @@ const WaveformChart = ({
         h="50px" 
         w="100%"
         border="2px solid #ccc" 
-        borderRadius="5px" 
+        borderRadius="5px"
+        position="relative"
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
       />

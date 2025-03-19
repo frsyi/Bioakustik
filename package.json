@@ -16,6 +16,8 @@
     "axios": "^1.6.7",
     "framer-motion": "^6.3.0",
     "fuse.js": "^7.0.0",
+    "html2canvas": "^1.4.1",
+    "jspdf": "^3.0.0",
     "next": "latest",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
