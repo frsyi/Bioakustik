@@ -2,14 +2,14 @@ import { PieChart, Pie, Cell, Tooltip as RechartsTooltip, Legend } from "rechart
 import useSWR from "swr"
 import useAuth from "../hooks/useAuth"
 
-const SegmentPieChart = ({ audioId, width = 400, height = 400 }: { audioId: string; width?: number; height?: number }) => { 
+const SegmentPieChart = ({ audioId, width = 350, height = 200 }: { audioId: string; width?: number; height?: number }) => { 
   const { fetcher } = useAuth();
   const { data, error } = useSWR(`/segment/count-by-audio/${audioId}`, (url) =>
     fetcher().get(url).then((res) => res.data)
   )
 
   if (error) return <p>Error fetching data</p>
-  if (!data || data.length === 0) return <p>No data available</p>
+  if (!data || data.length === 0) return
 
   const renderCustomLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
     const radius = innerRadius + (outerRadius - innerRadius) * 0.65
@@ -31,7 +31,7 @@ const SegmentPieChart = ({ audioId, width = 400, height = 400 }: { audioId: stri
         nameKey="tag"
         cx="50%"
         cy="50%"
-        outerRadius={100}
+        outerRadius={65}
         label={renderCustomLabel}
         labelLine={false}
       >
@@ -40,7 +40,12 @@ const SegmentPieChart = ({ audioId, width = 400, height = 400 }: { audioId: stri
         ))}
       </Pie>
       <RechartsTooltip />
-      <Legend />
+      <Legend 
+        layout="vertical" 
+        align="right" 
+        verticalAlign="middle" 
+        wrapperStyle={{ maxHeight: height, overflowY: "auto" }} 
+      />
     </PieChart>
   )
 }

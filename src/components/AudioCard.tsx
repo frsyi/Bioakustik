@@ -62,7 +62,7 @@ const formatTime = (duration: number) => {
 // }
 const getPosition = (duration: number, currentTime: number) => {
   const min = 0.5
-  const max = 99
+  const max = 99.5
   return (currentTime / duration) * (max - min) + min
 }
 
@@ -183,7 +183,7 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
       pdf.addImage(imgData, "PNG", imgX, imgY, imgWidth * ratio, imgHeight * ratio)
       pdf.save(`${recording.title}.pdf`)
     })
-  } 
+  }
 
   return (
     <Box
@@ -202,11 +202,20 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
             {recording.title}
           </Text>
           <Text fontSize="small">{recording.description}</Text>
+          <SegmentPieChart audioId={recording.id} width={350} height={200} />
         </Flex>
         <Flex flexDir="column" align="flex-end" gap={2} ml="auto">
-          <Text fontSize="small" display="inline">
-            {new Date(recording.createdAt).toLocaleString()}
-          </Text>
+          <Flex align="center" gap={2}>
+            <Text fontSize="small" display="inline">
+              {new Date(recording.createdAt).toLocaleString()}
+            </Text>
+            <IconButton
+              aria-label="collapse"
+              borderRadius="full"
+              icon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+              onClick={onToggle}
+            />
+          </Flex>
           <Flex
             bgColor={"gray.100"}
             px={2}
@@ -219,79 +228,71 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
               {recording.user?.name}
             </Box>
           </Flex>
-        </Flex>
-        <Box>
-          <IconButton
-            aria-label="collapse"
-            borderRadius={"full"}
-            icon={isOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-            onClick={onToggle}
-          />
-        </Box>
-      </Flex>
-      <Flex justify={"space-between"} mt={3} gap={2}>
-        <Button
-          ml="auto"
-          borderRadius="full"
-          colorScheme={"purple"}
-          onClick={onToggle}
-          bgColor="purple"
-          size="sm"
-          as="a"
-          target="_blank"
-          href={recording?.url}
-          leftIcon={<DownloadIcon />}
-        >
-          Download
-        </Button>
-        <Tooltip label="Download PDF" hasArrow>
-          <IconButton
-            aria-label="download-pdf"
-            borderRadius="full"
-            colorScheme={"green"}
-            size="sm"
-            onClick={handleDownloadPDF}
-            icon={<IconPrint />}
-          />
-        </Tooltip>
-
-        {segments && segments.length > 0 && (
-          <>
-            <Tooltip label="Show Pie Chart">
+          <Flex justify={"space-between"} mt={3} gap={2}>
+            <Button
+              ml="auto"
+              borderRadius="full"
+              colorScheme={"purple"}
+              onClick={onToggle}
+              bgColor="purple"
+              size="sm"
+              as="a"
+              target="_blank"
+              href={recording?.url}
+              leftIcon={<DownloadIcon />}
+            >
+              Download
+            </Button>
+            <Tooltip label="Download PDF" hasArrow>
               <IconButton
-                aria-label="pie-chart"
+                aria-label="download-pdf"
                 borderRadius="full"
-                colorScheme="blue"
+                colorScheme={"green"}
                 size="sm"
-                onClick={() => setIsPieChartOpen(true)}
-                icon={<IconPieChart />}
+                onClick={handleDownloadPDF}
+                icon={<IconPrint />}
               />
             </Tooltip>
-            <Modal isOpen={isPieChartOpen} onClose={() => setIsPieChartOpen(false)}>
-              <ModalOverlay />
-              <ModalContent>
-                <ModalHeader>Segment Distribution</ModalHeader>
-                <ModalCloseButton />
-                <ModalBody>
-                  <SegmentPieChart audioId={recording.id} width={400} height={400} />
-                </ModalBody>
-              </ModalContent>
-            </Modal>
-          </>
-        )}
 
-        {me?.role ==="ADMIN" && (
-          <Tooltip label="Delete Audio" hasArrow>
-            <IconButton
-              aria-label="delete"
-              borderRadius="full"
-              colorScheme={"red"}
-              size="sm"
-              onClick={handleDelete}
-              icon={<DeleteIcon />}
-            />
-          </Tooltip>
-        )}
+            {segments && segments.length > 0 && (
+              <>
+                <Tooltip label="Show Pie Chart">
+                  <IconButton
+                    aria-label="pie-chart"
+                    borderRadius="full"
+                    colorScheme="blue"
+                    size="sm"
+                    onClick={() => setIsPieChartOpen(true)}
+                    icon={<IconPieChart />}
+                  />
+                </Tooltip>
+                <Modal isOpen={isPieChartOpen} onClose={() => setIsPieChartOpen(false)}>
+                  <ModalOverlay />
+                  <ModalContent>
+                    <ModalHeader>Segment Distribution</ModalHeader>
+                    <ModalCloseButton />
+                    <ModalBody>
+                      <SegmentPieChart audioId={recording.id} width={400} height={400} />
+                    </ModalBody>
+                  </ModalContent>
+                </Modal>
+              </>
+            )}
+
+            {me?.role === "ADMIN" && (
+              <Tooltip label="Delete Audio" hasArrow>
+                <IconButton
+                  aria-label="delete"
+                  borderRadius="full"
+                  colorScheme={"red"}
+                  size="sm"
+                  onClick={handleDelete}
+                  icon={<DeleteIcon />}
+                />
+              </Tooltip>
+            )}
+          </Flex>
+        </Flex>
       </Flex>
       <Box position={"relative"} my={4} overflow="hidden">
           <WaveformChart
@@ -321,6 +322,11 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
                 return
               }
               setTimeRange({ ...timeRange, end: time })
+            }}
+            onWaveformClick={(startTime) => {
+              const endTime = Math.min(startTime + 5, audio?.duration || 0)
+              setTimeRange({ start: startTime, end: endTime })
+              createSegment({ audioId: recording.id, startTime, endTime })
             }}
           />
         {isFinite(audio?.duration) && (
@@ -517,9 +523,11 @@ const AudioCard = ({ recording, onDelete }: AudioCardProps) => {
           </Flex>
         </Flex>
       </Flex>
-      <Box id="hidden-piechart" alignItems="center" justifyContent="center" w="100%">
-        <SegmentPieChart audioId={recording.id} width={400} height={400} />
-      </Box>
+      {/* {isOpen && (
+        <Box alignItems="center" justifyContent="center" w="100%">
+          <SegmentPieChart audioId={recording.id} width={400} height={400} />
+        </Box>
+      )} */}
     </Box>
   )
 }
