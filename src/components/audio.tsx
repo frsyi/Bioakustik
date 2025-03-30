@@ -23,6 +23,7 @@ const WaveformChart = ({
   const spectrogramRef = useRef<HTMLDivElement>(null)
   const timelineRef = useRef<HTMLDivElement>(null)
   const [waveform, setWaveform] = useState<WaveSurfer | null>(null)
+  const [hoveredSegment, setHoveredSegment] = useState<number | null>(null)
 
   useEffect(() => {
     if (!waveformRef.current || !audioRef.current) return
@@ -35,11 +36,26 @@ const WaveformChart = ({
       cursorWidth: 0,
       barWidth: 3,
       barGap: 1,
-      height: 50,
+      height: 45,
       autoplay: false,
       backend: "MediaElement",
       media: audioRef.current,
+      sampleRate: 40000,
     })
+    
+    if (showSpectrogram && spectrogramRef.current) {
+      wavesurfer.registerPlugin(
+        SpectrogramPlugin.create({
+          container: spectrogramRef.current,
+          labels: true,
+          height: 600,
+          fftSamples: 1024,
+          frequencyMin: 0,
+          frequencyMax: 20000,
+          scale: "linear"
+        })
+      )
+    }  
 
     const timeline = TimelinePlugin.create({
       container: timelineRef.current!,
@@ -51,19 +67,8 @@ const WaveformChart = ({
         fontSize: "12px",
       },
     })
-
+    
     wavesurfer.registerPlugin(timeline)
-
-    if (showSpectrogram && spectrogramRef.current) {
-      wavesurfer.registerPlugin(
-        SpectrogramPlugin.create({
-          container: spectrogramRef.current,
-          labels: false,
-          height: 200,
-          fftSamples: 1024,
-        })
-      )
-    }
 
     setWaveform(wavesurfer)
 
@@ -91,17 +96,31 @@ const WaveformChart = ({
     }
   }, [waveform, audioRef])
 
-  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!waveform || !audioRef.current) return
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!timelineRef.current || !audioRef.current) return
 
-    const rect = waveformRef.current!.getBoundingClientRect()
+    const rect = timelineRef.current.getBoundingClientRect()
     const clickX = e.clientX - rect.left
     const percent = clickX / rect.width
     let startTime = percent * audioRef.current.duration
 
-    startTime = Math.round(startTime / 5) * 5
+    startTime = Math.floor(startTime / 5) * 5 
+    setHoveredSegment(startTime)
+  }
 
-    const endTime = Math.min(startTime + 5, audioRef.current.duration)
+  const handleMouseLeave = () => {
+    setHoveredSegment(null)
+  }
+
+  const handleClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!waveform || !audioRef.current) return
+
+    const rect = timelineRef.current!.getBoundingClientRect()
+    const clickX = e.clientX - rect.left
+    const percent = clickX / rect.width
+    let startTime = percent * audioRef.current.duration
+
+    startTime = Math.floor(startTime / 5) * 5
     onWaveformClick?.(startTime)
   }
 
@@ -140,19 +159,25 @@ const WaveformChart = ({
         cursor="pointer"
         borderTop="1px solid gray"
         position="relative"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
         onClick={handleClick}
-        _hover={{ bg: "gray.200" }}
       >
-        {[...Array(13)].map((_, i) => (
-          <Box
-            key={i}
-            position="absolute"
-            left={`${(i / 12) * 100}%`}
-            top="0"
-            bottom="0"
-            w="1px"
-          />
-        ))}
+        {[...Array(Math.ceil(audioRef.current?.duration / 5) || 12)].map((_, i) => {
+          const segmentStart = i * 5
+          return (
+            <Box
+              key={i}
+              position="absolute"
+              left={`${(i / (Math.ceil(audioRef.current?.duration / 5) || 12)) * 100}%`}
+              top="0"
+              bottom="0"
+              w="calc(100% / 12)"
+              bg={hoveredSegment === segmentStart ? "gray.300" : "transparent"}
+              transition="background-color 0.2s ease-in-out"
+            />
+          )
+        })}
       </Box>
       <Text fontSize="sm" textAlign="center" mt={1} color="black">
         Time [sec]
