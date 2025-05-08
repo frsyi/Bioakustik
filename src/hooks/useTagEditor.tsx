@@ -116,22 +116,26 @@ export const TagEditorProvider = ({ children }) => {
                   <FormLabel>Name</FormLabel>
                   <Input
                     type="text"
-                    placeholder="Name"
+                    placeholder="Enter name tag"
                     value={body.name}
                     onChange={(e) => setBody({ ...body, name: e.target.value })}
                   />
                 </FormControl>
-                <Input
-                  type="color"
-                  placeholder="Color"
-                  value={body.color}
-                  width="50px"
-                  aspectRatio={1}
-                  border="none"
-                  borderRadius="50%"
-                  p={0}
-                  onChange={(e) => setBody({ ...body, color: e.target.value })}
-                />
+                <FormControl>
+                  <FormLabel>Color</FormLabel>
+                  <Input
+                    type="color"
+                    placeholder="Enter color"
+                    value={body.color}
+                    width="50px"
+                    aspectRatio={1}
+                    border="none"
+                    borderRadius="50%"
+                    p={0}
+                    cursor="pointer"
+                    onChange={(e) => setBody({ ...body, color: e.target.value })}
+                  />
+                </FormControl>
                 <Button
                   type="submit"
                   bgColor={"purple"}
@@ -143,7 +147,14 @@ export const TagEditorProvider = ({ children }) => {
               </Flex>
             </form>
           </ModalBody>
-          <ModalFooter />
+          <ModalFooter>
+            <Button 
+              w="full"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </ctx.Provider>

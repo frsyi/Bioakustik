@@ -35,6 +35,7 @@ const WaveformChart = ({
       cursorColor: "transparent",
       cursorWidth: 0,
       barWidth: 3,
+      barHeight: 1,
       barGap: 1,
       height: 45,
       autoplay: false,
@@ -52,7 +53,7 @@ const WaveformChart = ({
           fftSamples: 1024,
           frequencyMin: 0,
           frequencyMax: 20000,
-          scale: "linear"
+          scale: "linear",
         })
       )
     }  

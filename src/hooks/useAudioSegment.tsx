@@ -155,6 +155,13 @@ export const AudioSegmentProvider = ({ children }) => {
           </ModalBody>
           <ModalFooter>
             <Button
+              onClick={onClose}
+              //variant="ghost"
+              mr={3}
+            >
+              Cancel
+            </Button>
+            <Button
               onClick={handleSubmit}
               bgColor="purple"
               color="white"

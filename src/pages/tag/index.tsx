@@ -16,10 +16,10 @@ const TagPage = () => {
             <TagCreateButton />
             <TagContainer />
           </Box>
-          <Box p={3} mt={4} borderRadius="xl" bgColor="white">
-            {/* <Box fontWeight="semibold" p={3}>Tag Insight</Box> */}
+          {/* <Box p={3} mt={4} borderRadius="xl" bgColor="white">
+            <Box fontWeight="semibold" p={3}>Tag Insight</Box>
             <TagByTime />
-          </Box>
+          </Box> */}
         </TagCreatorProvider>
       </TagEditorProvider>
     </TagProvider>

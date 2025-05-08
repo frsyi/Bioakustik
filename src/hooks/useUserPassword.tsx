@@ -3,7 +3,6 @@ import {
     Button,
     Flex,
     FormControl,
-    FormLabel,
     Input,
     Modal,
     ModalBody,
@@ -85,7 +84,6 @@ export const UserPasswordProvider = ({ children }) => {
               <form onSubmit={handleSubmit}>
                 <Flex flexDir="column" gap={3}>
                   <FormControl>
-                    <FormLabel>New Password</FormLabel>
                     <Input
                       type="password"
                       placeholder="Enter new password"
@@ -94,7 +92,6 @@ export const UserPasswordProvider = ({ children }) => {
                     />
                   </FormControl>
                   <FormControl>
-                    <FormLabel>Confirm Password</FormLabel>
                     <Input
                       type="password"
                       placeholder="Confirm new password"
@@ -113,7 +110,14 @@ export const UserPasswordProvider = ({ children }) => {
                 </Flex>
               </form>
             </ModalBody>
-            <ModalFooter />
+            <ModalFooter>
+              <Button 
+                w="full"
+                onClick={onClose}
+              >
+                Cancel
+              </Button>
+            </ModalFooter>
           </ModalContent>
         </Modal>
       </ctx.Provider>

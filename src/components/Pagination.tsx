@@ -48,11 +48,13 @@ const Pagination = ({
         icon={<ArrowLeftIcon fontSize={".8em"} />}
         aria-label="first"
         onClick={() => goPage(1)}
+        isDisabled={currentPage === 1}
       />
       <NavigationButton
         icon={<ChevronLeftIcon fontSize={"1.5em"} />}
         aria-label="previous"
         onClick={() => goPage(currentPage - 1)}
+        isDisabled={currentPage === 1}
       />
       <Box>Page</Box>
       {[-2, -1, 0, 1, 2]
@@ -79,11 +81,13 @@ const Pagination = ({
         icon={<ChevronRightIcon fontSize={"1.5em"} />}
         aria-label="next"
         onClick={() => goPage(currentPage + 1)}
+        isDisabled={currentPage >= maxPage}
       />
       <NavigationButton
         icon={<ArrowRightIcon fontSize={".8em"} />}
         aria-label="last"
         onClick={() => goPage(maxPage)}
+        isDisabled={currentPage >= maxPage}
       />
     </Flex>
   )

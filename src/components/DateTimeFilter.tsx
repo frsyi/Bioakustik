@@ -1,5 +1,9 @@
-import { Box, Flex, Select, Text, Input, Button, Popover, PopoverTrigger, PopoverContent, PopoverBody, PopoverCloseButton } from "@chakra-ui/react"
-import { useState } from "react"
+import { 
+  Box, Flex, Select, Text, Input, Button, Popover, 
+  PopoverTrigger, PopoverContent, PopoverBody, PopoverCloseButton, IconButton
+} from "@chakra-ui/react"
+import { CloseIcon } from "@chakra-ui/icons"
+import { useState, useCallback } from "react"
 
 const hours = Array.from({ length: 12 }, (_, i) => i + 1)
 const periods = ["AM", "PM"]
@@ -32,14 +36,30 @@ const DateTimeFilter = ({
   const [tempStartPeriod, setTempStartPeriod] = useState<string>("AM")
   const [tempEndHour, setTempEndHour] = useState<string | undefined>()
   const [tempEndPeriod, setTempEndPeriod] = useState<string>("AM")
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
-  const applyTimeFilter = () => {
+  const applyTimeFilter = useCallback(() => {
+    if (parseInt(tempStartHour) > parseInt(tempEndHour) && tempStartPeriod === tempEndPeriod) {
+      setErrorMessage("End time cannot be earlier than start time.")
+      return
+    }
+
+    setErrorMessage(null)
     setStartHour(tempStartHour)
     setStartPeriod(tempStartPeriod)
     setEndHour(tempEndHour)
     setEndPeriod(tempEndPeriod)
     setIsTimeApplied(true)
-  }
+  }, [tempStartHour, tempStartPeriod, tempEndHour, tempEndPeriod])
+
+  const clearTimeFilter = useCallback(() => {
+    setStartHour(undefined)
+    setStartPeriod("AM")
+    setEndHour(undefined)
+    setEndPeriod("AM")
+    setIsTimeApplied(false)
+    setErrorMessage(null)
+  }, [])
 
   return (
     <Flex align="center" gap={4}>
@@ -53,10 +73,28 @@ const DateTimeFilter = ({
 
       <Popover>
         <PopoverTrigger>
-          <Button bgColor="white" fontWeight="normal">
-            {isTimeApplied
-              ? `Time: ${startHour} ${startPeriod} - ${endHour} ${endPeriod}`
-              : "Select Range Time"}
+          <Button bgColor="white" fontWeight="normal" position="relative">
+            {isTimeApplied ? (
+              <Flex align="center" gap={2}>
+                <Text>
+                  {startHour} {startPeriod} - {endHour} {endPeriod}
+                </Text>
+                <IconButton
+                  icon={<CloseIcon />}
+                  size="xs"
+                  aria-label="Clear time"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    clearTimeFilter()
+                  }}
+                  variant="ghost"
+                  color="gray.500"
+                  _hover={{ bg: "gray.100" }}
+                />
+              </Flex>
+            ) : (
+              "Select Range Time"
+            )}
           </Button>
         </PopoverTrigger>
         <PopoverContent>
@@ -103,11 +141,17 @@ const DateTimeFilter = ({
               </Select>
             </Flex>
 
+            {errorMessage && (
+              <Text color="red.500" fontSize="sm" textAlign="center" mt={1} mb={3}>
+                {errorMessage}
+              </Text>
+            )}
+
             <Button
               w="full"
               bg="purple"
               color="white"
-              _hover={{ bg: "purple" }}
+              _hover={{ bg: "purple.600" }}
               isDisabled={!tempStartHour || !tempEndHour}
               onClick={applyTimeFilter}
             >

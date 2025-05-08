@@ -35,6 +35,17 @@ const DashboardPage = () => {
     endHour: endHour ? (endPeriod === "PM" ? Number(endHour) + 12 : Number(endHour)) : undefined,
   })
 
+  const updateFilter = (newQuery: Record<string, any>) => {
+    router.push({
+      pathname: "/dashboard",
+      query: { 
+        ...router.query, 
+        ...newQuery,
+        page: 1,
+      },
+    })
+  }
+
   if (!recording) return null
   return (
     <AudioSegmentProvider>
@@ -50,6 +61,7 @@ const DashboardPage = () => {
             value={title}
             onChange={(e) => {
               setTitle(e.currentTarget.value)
+              updateFilter({ title: e.currentTarget.value || undefined })
             }}
             variant={"solid"}
             bgColor={"white"}
@@ -65,15 +77,30 @@ const DashboardPage = () => {
 
         <DateTimeFilter
           selectedDate={selectedDate}
-          setSelectedDate={setSelectedDate}
+          setSelectedDate={(date) => {
+            setSelectedDate(date);
+            updateFilter({ date: date || undefined });
+          }}
           startHour={startHour}
-          setStartHour={setStartHour}
+          setStartHour={(hour) => {
+            setStartHour(hour);
+            updateFilter({ startHour: hour || undefined });
+          }}
           startPeriod={startPeriod}
-          setStartPeriod={setStartPeriod}
+          setStartPeriod={(period) => {
+            setStartPeriod(period);
+            updateFilter({ startPeriod: period || undefined });
+          }}
           endHour={endHour}
-          setEndHour={setEndHour}
+          setEndHour={(hour) => {
+            setEndHour(hour);
+            updateFilter({ endHour: hour || undefined });
+          }}
           endPeriod={endPeriod}
-          setEndPeriod={setEndPeriod}
+          setEndPeriod={(period) => {
+            setEndPeriod(period);
+            updateFilter({ endPeriod: period || undefined });
+          }}
           isTimeApplied={isTimeApplied}
           setIsTimeApplied={setIsTimeApplied}
         />

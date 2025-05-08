@@ -2,6 +2,8 @@ import {
   Alert,
   Button,
   Flex,
+  FormControl,
+  FormLabel,
   Input,
   Modal,
   ModalBody,
@@ -71,23 +73,30 @@ export const TagCreatorProvider = ({ children }) => {
             )}
             <form onSubmit={handleSubmit}>
               <Flex flexDir="column" gap={3}>
-                <Input
-                  type="text"
-                  placeholder="Name"
-                  value={body.name}
-                  onChange={(e) => setBody({ ...body, name: e.target.value })}
-                />
-                <Input
-                  type="color"
-                  placeholder="Color"
-                  value={body.color}
-                  width="50px"
-                  aspectRatio={1}
-                  border="none"
-                  borderRadius="50%"
-                  p={0}
-                  onChange={(e) => setBody({ ...body, color: e.target.value })}
-                />
+                <FormControl>
+                  <FormLabel>Name</FormLabel>
+                  <Input
+                    type="text"
+                    placeholder="Entar tag name"
+                    value={body.name}
+                    onChange={(e) => setBody({ ...body, name: e.target.value })}
+                  />
+                </FormControl>
+                <FormControl>
+                  <FormLabel>Color</FormLabel>
+                  <Input
+                    type="color"
+                    placeholder="Color"
+                    value={body.color}
+                    width="50px"
+                    aspectRatio={1}
+                    border="none"
+                    borderRadius="50%"
+                    p={0}
+                    cursor="pointer"
+                    onChange={(e) => setBody({ ...body, color: e.target.value })}
+                  />
+                </FormControl>
                 <Button
                   type="submit"
                   bgColor={"purple"}
@@ -99,7 +108,14 @@ export const TagCreatorProvider = ({ children }) => {
               </Flex>
             </form>
           </ModalBody>
-          <ModalFooter />
+          <ModalFooter>
+            <Button 
+              w="full"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
         </ModalContent>
       </Modal>
     </ctx.Provider>
